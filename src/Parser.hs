@@ -32,11 +32,11 @@ integer = lexeme L.decimal
 signedInteger :: Parser Int
 signedInteger = L.signed sc integer
 
-rword :: String -> Parser ()
-rword w = (lexeme . try) (string w *> notFollowedBy alphaNumChar)
+rword :: String -> Parser String
+rword w = (lexeme . try) (string w <* notFollowedBy alphaNumChar)
 
 rws :: [String]
-rws = [ "+", "-", "/", "*" ]
+rws = [ "lambda", "true", "false", "\\", ".", "+", "-", "/", "*" ]
 
 identifier :: Parser String
 identifier = (lexeme . try) (p >>= check)
@@ -51,17 +51,22 @@ variable = do
   x <- identifier
   pure (Var x)
 
+true, false, boolean :: Parser Expr
+true = do rword "true"; pure (Lit $ LBool True)
+false = do rword "false"; pure (Lit $ LBool False)
+boolean = true <|> false
+
 number :: Parser Expr
 number = do
   n <- signedInteger
-  pure $ Lit n
+  pure $ Lit (LInt n)
 
 lambda :: Parser Expr
 lambda = do
-  symbol "\\"
+  symbol "\\" <|> rword "lambda"
   parameter <- variable
   symbol "."
-  e <- term
+  e <- expr
   pure $ Abs parameter e
 
 expr :: Parser Expr
@@ -74,3 +79,4 @@ term = parens expr
   <|> variable
   <|> lambda
   <|> number
+  <|> boolean
