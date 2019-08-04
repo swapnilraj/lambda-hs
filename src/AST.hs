@@ -3,13 +3,8 @@ module AST where
 type Name = String
 
 data Expr =
-  | Var Name
+  Var Name
   | App Expr Expr
-  | Abs Var Expr
-  | Lit Lit
-  deriving (Show)
-
-data Lit =
-  | LInt Int
-  | LBool Bool
+  | Abs Expr Expr
+  | Lit Int
   deriving (Show)
