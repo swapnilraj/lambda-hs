@@ -125,3 +125,13 @@ booleanOperations =
 
 booleanExpr :: Parser Expr
 booleanExpr = makeExprParser booleanTerm booleanOperations
+
+contents :: Parser a -> Parser a
+contents p = do
+    _ <- space
+    r <- p
+    eof
+    pure r
+
+parseExpr :: String -> Either (ParseErrorBundle String Void) Expr
+parseExpr = parse (contents expr) "<stdin>"
