@@ -7,6 +7,14 @@ data Expr =
   | App Expr Expr
   | Abs Expr Expr
   | Lit Lit
+  | Negation Expr
+  | Sum Expr Expr
+  | Substract Expr Expr
+  | Product Expr Expr
+  | Division Expr Expr
+  | And Expr Expr
+  | Or Expr Expr
+  | Not Expr
   deriving (Show)
 
 data Lit =

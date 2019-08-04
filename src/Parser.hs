@@ -1,10 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Parser where
 
 import AST
 
 import Control.Monad
+import Control.Monad.Combinators.Expr
 import Data.Void
 import Text.Megaparsec
 import Text.Megaparsec.Char
@@ -29,14 +28,12 @@ parens = between (symbol "(") (symbol ")")
 integer :: Parser Int
 integer = lexeme L.decimal
 
-signedInteger :: Parser Int
-signedInteger = L.signed sc integer
-
 rword :: String -> Parser String
 rword w = (lexeme . try) (string w <* notFollowedBy alphaNumChar)
 
 rws :: [String]
-rws = [ "lambda", "true", "false", "\\", ".", "+", "-", "/", "*" ]
+rws = [ "lambda", "\\", ".", "true", "false"
+      , "&&", "||", "!", "+", "-", "/", "*" ]
 
 identifier :: Parser String
 identifier = (lexeme . try) (p >>= check)
@@ -58,7 +55,7 @@ boolean = true <|> false
 
 number :: Parser Expr
 number = do
-  n <- signedInteger
+  n <- integer
   pure $ Lit (LInt n)
 
 lambda :: Parser Expr
@@ -69,14 +66,62 @@ lambda = do
   e <- expr
   pure $ Abs parameter e
 
+term :: Parser Expr
+term = try arithExpr
+  <|> try booleanExpr
+  <|> number
+  <|> boolean
+  <|> lambda
+  <|> parens expr
+  <|> variable
+
 expr :: Parser Expr
 expr = do
   es <- many term
-  return (foldl1 App es)
+  pure (foldl1 App es)
 
-term :: Parser Expr
-term = parens expr
-  <|> variable
-  <|> lambda
-  <|> number
-  <|> boolean
+arithTerm :: Parser Expr
+arithTerm = choice
+  [ parens arithExpr
+  , number
+  , variable
+  ]
+
+arithOperations :: [[ Operator Parser Expr ]]
+arithOperations =
+  [
+    [ Prefix (Negation <$ symbol "-")
+    , Prefix (id <$ symbol "+")
+    ]
+  ,
+    [ InfixL (Product <$ symbol "*")
+    , InfixL (Division <$ symbol "/")
+    ]
+  ,
+    [ InfixL (Sum <$ symbol "+")
+    , InfixL (Substract <$ symbol "-")
+    ]
+  ]
+
+arithExpr :: Parser Expr
+arithExpr = makeExprParser arithTerm arithOperations
+
+booleanTerm :: Parser Expr
+booleanTerm = choice
+  [ parens booleanExpr
+  , boolean
+  , variable
+  ]
+
+booleanOperations :: [[ Operator Parser Expr ]]
+booleanOperations =
+  [
+    [ Prefix (Not <$ symbol "!") ]
+  ,
+    [ InfixR (And <$ symbol "&&")
+    , InfixR (Or <$ symbol "||")
+    ]
+  ]
+
+booleanExpr :: Parser Expr
+booleanExpr = makeExprParser booleanTerm booleanOperations
