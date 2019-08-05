@@ -33,7 +33,7 @@ rword w = (lexeme . try) (string w <* notFollowedBy alphaNumChar)
 
 rws :: [String]
 rws = [ "lambda", "\\", ".", "true", "false"
-      , "&&", "||", "!", "+", "-", "/", "*" ]
+      , "and", "or", "not", "+", "-", "/", "*" ]
 
 identifier :: Parser String
 identifier = (lexeme . try) (p >>= check)
@@ -67,8 +67,7 @@ lambda = do
   pure $ Abs parameter e
 
 term :: Parser Expr
-term = try arithExpr
-  <|> try booleanExpr
+term = try expression
   <|> number
   <|> boolean
   <|> lambda
@@ -80,22 +79,26 @@ expr = do
   es <- many term
   pure (foldl1 App es)
 
-arithTerm :: Parser Expr
-arithTerm = choice
-  [ parens arithExpr
+expressionTerms :: Parser Expr
+expressionTerms = choice
+  [ parens expression
   , number
+  , boolean
   , variable
   ]
 
-arithOperations :: [[ Operator Parser Expr ]]
-arithOperations =
+operations :: [[ Operator Parser Expr ]]
+operations =
   [
     [ Prefix (Negation <$ symbol "-")
     , Prefix (id <$ symbol "+")
+    , Prefix (Not <$ rword "and")
     ]
   ,
     [ InfixL (Product <$ symbol "*")
     , InfixL (Division <$ symbol "/")
+    , InfixL (And <$ rword "and")
+    , InfixL (Or <$ rword "or")
     ]
   ,
     [ InfixL (Sum <$ symbol "+")
@@ -103,28 +106,8 @@ arithOperations =
     ]
   ]
 
-arithExpr :: Parser Expr
-arithExpr = makeExprParser arithTerm arithOperations
-
-booleanTerm :: Parser Expr
-booleanTerm = choice
-  [ parens booleanExpr
-  , boolean
-  , variable
-  ]
-
-booleanOperations :: [[ Operator Parser Expr ]]
-booleanOperations =
-  [
-    [ Prefix (Not <$ symbol "!") ]
-  ,
-    [ InfixR (And <$ symbol "&&")
-    , InfixR (Or <$ symbol "||")
-    ]
-  ]
-
-booleanExpr :: Parser Expr
-booleanExpr = makeExprParser booleanTerm booleanOperations
+expression :: Parser Expr
+expression = makeExprParser expressionTerms operations
 
 contents :: Parser a -> Parser a
 contents p = do
