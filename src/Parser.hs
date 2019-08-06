@@ -66,21 +66,8 @@ lambda = do
   symbol "\\" <|> rword "lambda"
   parameter <- variable
   symbol "."
-  e <- expr
-  pure $ Abs parameter e
-
-term :: Parser Expr
-term = try expression
-  <|> number
-  <|> boolean
-  <|> lambda
-  <|> parens expr
-  <|> variable
-
-expr :: Parser Expr
-expr = do
-  es <- many term
-  pure (foldl1 App es)
+  body <- expr
+  pure $ Abs parameter body
 
 expressionTerms :: Parser Expr
 expressionTerms = choice
@@ -119,6 +106,19 @@ operations =
 
 expression :: Parser Expr
 expression = makeExprParser expressionTerms operations
+
+term :: Parser Expr
+term = try expression
+  <|> parens expr
+  <|> number
+  <|> boolean
+  <|> lambda
+  <|> variable
+
+expr :: Parser Expr
+expr = do
+  es <- many term
+  pure (foldl1 App es)
 
 contents :: Parser a -> Parser a
 contents p = do
