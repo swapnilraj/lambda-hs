@@ -32,8 +32,11 @@ rword :: String -> Parser String
 rword w = (lexeme . try) (string w <* notFollowedBy alphaNumChar)
 
 rws :: [String]
-rws = [ "lambda", "\\", ".", "true", "false"
-      , "and", "or", "not", "+", "-", "/", "*" ]
+rws = [ "lambda", "\\", "."
+      , "true", "false", "and", "or", "not"
+      , "+", "-", "/", "*"
+      , "<", ">", "="
+      ]
 
 identifier :: Parser String
 identifier = (lexeme . try) (p >>= check)
@@ -92,17 +95,25 @@ operations =
   [
     [ Prefix (Negation <$ symbol "-")
     , Prefix (id <$ symbol "+")
-    , Prefix (Not <$ rword "and")
     ]
+  ,
+    [ Prefix (Not <$ rword "not") ]
   ,
     [ InfixL (Product <$ symbol "*")
     , InfixL (Division <$ symbol "/")
-    , InfixL (And <$ rword "and")
-    , InfixL (Or <$ rword "or")
     ]
   ,
     [ InfixL (Sum <$ symbol "+")
     , InfixL (Substract <$ symbol "-")
+    ]
+  ,
+    [ InfixL (Less <$ symbol "<")
+    , InfixL (Greater <$ symbol ">")
+    , InfixL (Equal <$ symbol "=")
+    ]
+  ,
+    [ InfixL (And <$ rword "and")
+    , InfixL (Or <$ rword "or")
     ]
   ]
 

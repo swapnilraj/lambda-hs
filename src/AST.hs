@@ -15,6 +15,9 @@ data Expr =
   | And Expr Expr
   | Or Expr Expr
   | Not Expr
+  | Less Expr Expr
+  | Greater Expr Expr
+  | Equal Expr Expr
   deriving (Show)
 
 data Lit =
