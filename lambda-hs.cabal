@@ -57,7 +57,7 @@ executable lambda-hs
                        , Parser
 
   -- LANGUAGE extensions used by modules in this package.
-  other-extensions:    OverloadedStrings
+  -- other-extensionss:
 
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.12 && <4.13
