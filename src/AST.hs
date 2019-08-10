@@ -18,9 +18,9 @@ data Expr
   | Less Expr Expr
   | Greater Expr Expr
   | Equal Expr Expr
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Lit
   = LInt Int
   | LBool Bool
-  deriving (Show)
+  deriving (Show, Eq)
