@@ -67,6 +67,8 @@ executable lambda-hs
                        , megaparsec
                        , parser-combinators
                        , prettyprinter
+                       , haskeline
+                       , mtl
 
   -- Directories containing source files.
   hs-source-dirs:      src
