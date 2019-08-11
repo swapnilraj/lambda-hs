@@ -4,6 +4,10 @@ Lambda calculus is the [God's Programming language](https://podcst.app/episode?f
 This interpreter is an extension to the original lambda caculus as described
 [here](http://www.cse.unt.edu/~tarau/teaching/PL/docs/Lambda%20calculus.pdf).
 
+## Pre-requisites
+
+  - cabal
+
 ## Extensions
 
   - Number and Booleans can be encoded in pure lambda calculus but for
@@ -42,4 +46,16 @@ or := lambda p.lambda q.p p q
 0 := \f.\x.x
 1 := lambda f.lambda x.f x
 2 := \f.\x. f ( f x )
+```
+
+## REPL
+
+You can try out the examples above in the repl.
+`cabal new-run`, will open the repl
+
+```
+λ (((\p.\q.p q p)\x.\y.x)\x.\y.y)
+\y.y
+λ (((\p.\q.p p q)\x.\y.x)\x.\y.y)
+\y.x
 ```
