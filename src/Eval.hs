@@ -60,3 +60,6 @@ eval env expr
   | (Equal f g) <- expr          = let f' = eval env f
                                        g' = eval env g
                                    in VBool $ f' == g'
+
+runEval :: Expr -> Value
+runEval = eval empty
