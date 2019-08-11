@@ -38,25 +38,25 @@ eval env expr
   | (Product f g) <- expr        = let (VInt f') = eval env f
                                        (VInt g') = eval env g
                                    in VInt $ f' * g'
-  | (Division f g) <- expr        = let (VInt f') = eval env f
-                                        (VInt g') = eval env g
-                                    in VInt $ quot f' g'
-  | (Negation f) <- expr          = let (VInt f') = eval env f
-                                    in VInt $ negate f'
-  | (And f g) <- expr             = let (VBool f') = eval env f
-                                        (VBool g') = eval env g
-                                    in VBool $ f' && g'
-  | (Or f g) <- expr              = let (VBool f') = eval env f
-                                        (VBool g') = eval env g
-                                    in VBool $ f' || g'
-  | (Not f) <- expr               = let (VBool f') = eval env f
-                                    in VBool $ not f'
-  | (Less f g) <- expr            = let (VInt f') = eval env f
-                                        (VInt g') = eval env g
+  | (Division f g) <- expr       = let (VInt f') = eval env f
+                                       (VInt g') = eval env g
+                                   in VInt $ quot f' g'
+  | (Negation f) <- expr         = let (VInt f') = eval env f
+                                   in VInt $ negate f'
+  | (And f g) <- expr            = let (VBool f') = eval env f
+                                       (VBool g') = eval env g
+                                   in VBool $ f' && g'
+  | (Or f g) <- expr             = let (VBool f') = eval env f
+                                       (VBool g') = eval env g
+                                   in VBool $ f' || g'
+  | (Not f) <- expr              = let (VBool f') = eval env f
+                                   in VBool $ not f'
+  | (Less f g) <- expr           = let (VInt f') = eval env f
+                                       (VInt g') = eval env g
                                     in VBool $ f' < g'
-  | (Greater f g) <- expr         = let (VInt f') = eval env f
-                                        (VInt g') = eval env g
-                                    in VBool $ f' > g'
-  | (Equal f g) <- expr           = let f' = eval env f
-                                        g' = eval env g
-                                     in VBool $ f' == g'
+  | (Greater f g) <- expr        = let (VInt f') = eval env f
+                                       (VInt g') = eval env g
+                                   in VBool $ f' > g'
+  | (Equal f g) <- expr          = let f' = eval env f
+                                       g' = eval env g
+                                   in VBool $ f' == g'
