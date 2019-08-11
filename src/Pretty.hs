@@ -1,6 +1,7 @@
 module Pretty where
 
 import AST
+import Data.Text.Prettyprint.Doc.Render.String
 import Data.Text.Prettyprint.Doc
 
 instance Pretty Expr where
@@ -20,3 +21,6 @@ instance Pretty Expr where
   pretty (Less x y) = pretty x <+> langle <+> pretty y
   pretty (Greater x y) = pretty x <+> rangle <+> pretty y
   pretty (Equal x y) = pretty x <+> equals <+> pretty y
+
+instance Show Expr where
+    showsPrec _ = renderShowS . layoutPretty defaultLayoutOptions . pretty

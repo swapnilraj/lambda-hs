@@ -2,6 +2,7 @@ module Eval where
 
 import AST
 import Data.Map as Map
+import Pretty
 
 type Scope = Map Name Value
 
@@ -14,7 +15,7 @@ data Value
 instance Show Value where
   show (VInt i) = show i
   show (VBool b) = show b
-  show (VClosure{}) = show "[[closure]]"
+  show (VClosure _ _ e) = show e
 
 apply :: Value -> Value -> Value
 apply (VClosure env name clo) exp = eval (insert name exp env) clo
